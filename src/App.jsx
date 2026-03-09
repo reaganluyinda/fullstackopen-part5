@@ -36,11 +36,15 @@ const App = () => {
       const user = await loginService.login({username, password})
       window.localStorage.setItem('loggedBlogUser', JSON.stringify(user))
       blogService.setToken(user.token)
+      setErrorMessage({"text": "Welcome, " + user.name, "type": "success"});
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
       setUser(user);
       setUsername("");
       setPassword("");
     } catch {
-      setErrorMessage("Wrong credentials");
+      setErrorMessage({"text": "Wrong username or password", "type": "error"});
       setTimeout(() => {
         setErrorMessage(null);
       }, 5000);
@@ -55,14 +59,26 @@ const App = () => {
 
   //create new blog handler
   const CreateBlog = async blogObject => {
-    const returnedBlog = await blogService.create(blogObject)
+    try {
+const returnedBlog = await blogService.create(blogObject)
     setBlogs(blogs.concat(returnedBlog))
+    setErrorMessage({"text": "A new blog" + returnedBlog.title + " Added", "type": "success"});
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }catch{
+      setErrorMessage({"text": "Missing fields in Blog", "type": "error"});
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
+    
   }
  
   if(user === null) {
     return (
     <div>
-       <Notification message={errorMessage} />
+       <Notification message={errorMessage?.text} type={errorMessage?.type} />
         <h2>log in to application</h2>
         <form onSubmit={handleLogin}>
           <div>
@@ -79,7 +95,7 @@ const App = () => {
   
   return (
     <div>
-       <Notification message={errorMessage} />
+       <Notification message={errorMessage?.text} type={errorMessage?.type} />
       <h2>blogs</h2>
       {user && (<div>
         <h3>{user.name} logged in <button onClick={handleLogout}>logout</button></h3> 
