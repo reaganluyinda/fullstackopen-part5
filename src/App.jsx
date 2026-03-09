@@ -3,6 +3,7 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
+import BlogForm from './components/newBlog'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -22,6 +23,7 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
+      blogService.setToken(user.token)
     }
   }, []);
 
@@ -33,6 +35,7 @@ const App = () => {
     try {
       const user = await loginService.login({username, password})
       window.localStorage.setItem('loggedBlogUser', JSON.stringify(user))
+      blogService.setToken(user.token)
       setUser(user);
       setUsername("");
       setPassword("");
@@ -44,15 +47,22 @@ const App = () => {
     }
   }
 
+  //logout handler
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogUser');
     setUser(null);
   }
 
-
+  //create new blog handler
+  const CreateBlog = async blogObject => {
+    const returnedBlog = await blogService.create(blogObject)
+    setBlogs(blogs.concat(returnedBlog))
+  }
+ 
   if(user === null) {
     return (
     <div>
+       <Notification message={errorMessage} />
         <h2>log in to application</h2>
         <form onSubmit={handleLogin}>
           <div>
@@ -73,6 +83,7 @@ const App = () => {
       <h2>blogs</h2>
       {user && (<div>
         <h3>{user.name} logged in <button onClick={handleLogout}>logout</button></h3> 
+        <BlogForm CreateBlog={CreateBlog} />
       </div>)}
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
