@@ -118,7 +118,8 @@ const returnedBlog = await blogService.create(blogObject)
           <BlogForm CreateBlog={CreateBlog} />
         </Togglable>
       </div>)}
-      {blogs.map(blog =>
+      {[...blogs].sort((a,b) => b.likes - a.likes)
+      .map(blog =>
         <Blog key={blog.id} blog={blog} handleLikes={handleLikes} />
       )}
     </div>
