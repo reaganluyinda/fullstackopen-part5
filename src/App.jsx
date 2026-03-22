@@ -89,7 +89,15 @@ const returnedBlog = await blogService.create(blogObject)
 
   }
 
- 
+ //delete blog handler
+  const handleDelete = async (blog) => {
+    const confirmDelete = window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)
+    if (confirmDelete) {
+      await blogService.remove(blog.id)
+      setBlogs(blogs.filter(b => b.id !== blog.id))
+    }
+  }
+
   if(user === null) {
     return (
     <div>
@@ -120,7 +128,7 @@ const returnedBlog = await blogService.create(blogObject)
       </div>)}
       {[...blogs].sort((a,b) => b.likes - a.likes)
       .map(blog =>
-        <Blog key={blog.id} blog={blog} handleLikes={handleLikes} />
+        <Blog key={blog.id} blog={blog} handleLikes={handleLikes} handleDelete={handleDelete} user={user}/>
       )}
     </div>
   )
