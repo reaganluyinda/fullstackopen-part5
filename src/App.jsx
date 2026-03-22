@@ -78,6 +78,17 @@ const returnedBlog = await blogService.create(blogObject)
     }
     
   }
+
+  //like blog handler
+  const handleLikes =async (blog) =>{
+    const updatedBlog = {
+...blog, likes: blog.likes + 1, user: blog.user.id
+    }
+    const returnedBlog = await blogService.update(blog.id, updatedBlog)
+    setBlogs(blogs.map(b => b.id !== blog.id ? b : returnedBlog))
+
+  }
+
  
   if(user === null) {
     return (
@@ -108,7 +119,7 @@ const returnedBlog = await blogService.create(blogObject)
         </Togglable>
       </div>)}
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} handleLikes={handleLikes} />
       )}
     </div>
   )
