@@ -52,9 +52,6 @@ describe('<Blog />', () => {
     await user.click(likeButton)
     await user.click(likeButton)
 
-
-    screen.debug()
-
     expect(mockHandler.mock.calls).toHaveLength(2)
   })
 })
