@@ -35,9 +35,26 @@ describe('<Blog />', () => {
     const urlElement = screen.findByText('http://testblog.com')
     const likesElement = screen.findByText('5')
 
-    screen.debug()
-
     expect(urlElement).toBeDefined()
     expect(likesElement).toBeDefined()
+  })
+
+  test('calls event handler twice when like button is clicked twice', async () => {
+    const mockHandler = vi.fn()
+
+    render(<Blog blog={blog} handleLikes={mockHandler} />)
+
+    const user = userEvent.setup()
+    const viewButton = screen.getByText('view')
+    await user.click(viewButton)
+
+    const likeButton = screen.getByText('like')
+    await user.click(likeButton)
+    await user.click(likeButton)
+
+
+    screen.debug()
+
+    expect(mockHandler.mock.calls).toHaveLength(2)
   })
 })
