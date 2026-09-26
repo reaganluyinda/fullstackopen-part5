@@ -66,7 +66,7 @@ const App = () => {
       const returnedBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(returnedBlog))
       blogFormRef.current.toggleVisibility()
-      setErrorMessage({ 'text': 'A new blog' + returnedBlog.title + ' Added', 'type': 'success' })
+      setErrorMessage({ 'text': 'A new blog ' + returnedBlog.title + ' Added', 'type': 'success' })
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
