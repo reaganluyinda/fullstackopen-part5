@@ -1,4 +1,5 @@
 const {test, expect, beforeEach, describe} = require('@playwright/test');
+const {loginWith, createBlog} = require('./helper');
 
 describe('Blog app', () =>{
     beforeEach(async ({page, request}) => {
@@ -25,32 +26,28 @@ describe('Blog app', () =>{
 
     describe('Login', () => {
         test('succeeds with correct credentials', async ({page}) =>{
-         await page.getByLabel('username').fill('Reagan');
-         await page.getByLabel('password').fill('123456789');
-            await page.getByRole('button', {name: 'login'}).click();
+         await loginWith(page, 'Reagan', '123456789');
             await expect(page.getByText('Welcome, Reagan Luyinda')).toBeVisible();
             await expect(page.getByText('Reagan Luyinda logged in')).toBeVisible();   
         })
 
         test('fails with wrong credentials', async ({page}) =>{
-            await page.getByLabel('username').fill('Reagan');
-            await page.getByLabel('password').fill('wrongpassword');
-            await page.getByRole('button', {name: 'login'}).click();
+            await loginWith(page, 'Reagan', 'wrong');
             await expect(page.getByText('Wrong username or password')).toBeVisible();
             await expect(page.getByRole('button', {name: 'login'})).toBeVisible();
             
         })
     })
 
-    // describe('When logged in ', () => {
-    //     beforeEach(async ({page}) => {
-    //         await page.getByLabel('username').fill('Reagan');
-    //         await page.getByLabel('password').fill('123456789');
-    //         await page.getByRole('button', {name: 'login'}).click();
-    //     })
+    describe('When logged in ', () => {
+        beforeEach(async ({page}) => {
+            await loginWith(page, 'Reagan', '123456789');
+        })
 
-    //     test('a new blog can be created', async ({page}) => {
-
-    //     })
-    // })
+        test('a new blog can be created', async ({page}) => {
+            await createBlog(page, 'Spiderman', 'John Doe', 'http://testblog.com');
+            await expect(page.getByText(' A new blog Spiderman Added')).toBeVisible();
+            await expect(page.getByText('Spiderman John Doe')).toBeVisible();
+        })
+    })
 })
