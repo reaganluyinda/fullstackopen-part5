@@ -28,7 +28,8 @@ describe('Blog app', () =>{
          await page.getByLabel('username').fill('Reagan');
          await page.getByLabel('password').fill('123456789');
             await page.getByRole('button', {name: 'login'}).click();
-            await expect(page.getByText('Reagan Luyinda logged in')).toBeVisible();
+            await expect(page.getByText('Welcome, Reagan Luyinda')).toBeVisible();
+            await expect(page.getByText('Reagan Luyinda logged in')).toBeVisible();   
         })
 
         test('fails with wrong credentials', async ({page}) =>{
@@ -37,6 +38,19 @@ describe('Blog app', () =>{
             await page.getByRole('button', {name: 'login'}).click();
             await expect(page.getByText('Wrong username or password')).toBeVisible();
             await expect(page.getByRole('button', {name: 'login'})).toBeVisible();
+            
         })
     })
+
+    // describe('When logged in ', () => {
+    //     beforeEach(async ({page}) => {
+    //         await page.getByLabel('username').fill('Reagan');
+    //         await page.getByLabel('password').fill('123456789');
+    //         await page.getByRole('button', {name: 'login'}).click();
+    //     })
+
+    //     test('a new blog can be created', async ({page}) => {
+
+    //     })
+    // })
 })
