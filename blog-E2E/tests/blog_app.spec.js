@@ -5,13 +5,20 @@ describe('Blog app', () =>{
     beforeEach(async ({page, request}) => {
         await request.post('/api/testing/reset');
         await request.post('/api/users', {
-            data: {
-                
-                name: 'Reagan Luyinda',
-                username: 'Reagan',
-                password: '123456789'
-            }
-        });
+      data: {
+        name: 'Reagan Luyinda',
+        username: 'Reagan',
+        password: '123456789'
+      }
+    })
+
+    await request.post('/api/users', {
+      data: {
+        name: 'Trevor Noah',
+        username: 'Trevor',
+        password: '987654321'
+      }
+    })
         await page.goto('/');
     })
 
@@ -54,18 +61,29 @@ describe('Blog app', () =>{
             await createBlog(page, 'Spiderman', 'John Doe', 'http://testblog.com');
             // await expect(page.getByText('Spiderman John Doe')).toBeVisible();
             const blog = page.getByText('Spiderman John Doe').locator('..').locator('..');
-           await page.getByRole('button', {name: 'view'}).click();
-           await page.getByRole('button', {name: 'like'}).click();
+           await blog.getByRole('button', {name: 'view'}).click();
+           await blog.getByRole('button', {name: 'like'}).click();
            await expect(page.getByText('1 likes')).toBeVisible();
         })
 
         test('a blog can be deleted', async ({page}) => {
             await createBlog(page, 'Spiderman', 'John Doe', 'http://testblog.com');
             const blog = page.getByText('Spiderman John Doe').locator('..').locator('..');
-            await page.getByRole('button', {name: 'view'}).click();
+            await blog.getByRole('button', {name: 'view'}).click();
             page.on('dialog', dialog => dialog.accept());
             await page.getByRole('button', {name: 'remove'}).click();
             await expect(page.getByText('Spiderman John Doe')).not.toBeVisible();
+        })
+
+        test('delete button is not visible to other users', async ({page, request}) => {
+            await createBlog(page, 'Spiderman', 'John Doe', 'http://testblog.com');
+             const blog = page.getByText('Spiderman John Doe').locator('..').locator('..');
+            await blog.getByRole('button', {name: 'view'}).click();
+            await expect(page.getByRole('button', {name: 'remove'})).toBeVisible();
+            await page.getByRole('button', {name: 'logout'}).click();
+            await loginWith(page, 'Trevor', '987654321');
+            await blog.getByRole('button', {name: 'view'}).click();
+            await expect(page.getByRole('button', {name: 'remove'})).not.toBeVisible();
         })
 
     })
