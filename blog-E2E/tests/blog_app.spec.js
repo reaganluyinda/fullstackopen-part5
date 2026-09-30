@@ -86,5 +86,31 @@ describe('Blog app', () =>{
             await expect(page.getByRole('button', {name: 'remove'})).not.toBeVisible();
         })
 
+        test('blogs are arranged in the order according to the likes', async ({page}) => {
+            await createBlog(page, 'Spiderman', 'John Doe', 'http://testblog.com');
+            await createBlog(page, 'Batman', 'Jane Doe', 'http://testblog.com');
+            await createBlog(page, 'Black panther', 'Tchalla', 'http://testblog.com');
+            const blog1 = page.locator('.blog').filter({hasText: 'Spiderman John Doe'})
+            const blog2 = page.locator('.blog').filter({hasText: 'Batman Jane Doe'})
+            const blog3 = page.locator('.blog').filter({hasText: 'Black panther Tchalla'})
+            await blog1.getByRole('button', {name: 'view'}).click();
+            await blog1.getByRole('button', {name: 'like'}).click();
+            await blog1.getByRole('button', {name: 'like'}).click();
+
+            await blog2.getByRole('button', {name: 'view'}).click();
+            await blog2.getByRole('button', {name: 'like'}).click();
+            
+            
+            await blog3.getByText('Black panther').getByRole('button', {name: 'view'}).click();
+            await blog3.getByRole('button', {name: 'like'}).click();
+            await blog3.getByRole('button', {name: 'like'}).click();
+            await blog3.getByRole('button', {name: 'like'}).click();
+           
+            const blogs = page.locator('.blog')
+
+            await expect(blogs.nth(0)).toContainText('Black panther')
+            await expect(blogs.nth(1)).toContainText('Spiderman')
+            await expect(blogs.nth(2)).toContainText('Batman')
+        })
     })
 })
